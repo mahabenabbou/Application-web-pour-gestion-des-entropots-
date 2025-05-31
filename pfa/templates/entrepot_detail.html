@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div class="card-modern">
+        <div class="card-header-modern">
+            <div class="card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <i class="fas fa-warehouse"></i>
+            </div>
+            <h3 class="card-title">Détails de l'entrepôt</h3>
+        </div>
+
+        <div style="padding: 25px;">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-signature"></i> Nom</span>
+                    <span class="detail-value">{{ entrepot.nom }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-city"></i> Ville</span>
+                    <span class="detail-value">{{ entrepot.ville }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-map-marker-alt"></i> Adresse</span>
+                    <span class="detail-value">{{ entrepot.adresse }}</span>
+                </div>
+                
+                <div class="detail-item full-width">
+                    <span class="detail-label"><i class="fas fa-align-left"></i> Description</span>
+                    <span class="detail-value">{{ entrepot.description|default:"Aucune description" }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-calendar-alt"></i> Date de création</span>
+                    <span class="detail-value">{{ entrepot.date_creation }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-ruler-combined"></i> Surface</span>
+                    <span class="detail-value">{{ entrepot.surface }} m²</span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-ruler-combined"></i> cout_variable_unitaire</span>
+                    <span class="detail-value">{{ entrepot.cout_variable_unitaire }} </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-ruler-combined"></i> cout_fixe_annuel</span>
+                    <span class="detail-value">{{ entrepot.cout_fixe_annuel }}</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;">
+                <a href="{% url 'edit_entrepot' entrepot.pk %}" class="btn-primary-modern">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+                <a href="{% url 'delete_entrepot' entrepot.pk %}" class="btn-danger-modern">
+                    <i class="fas fa-trash-alt"></i> Supprimer
+                </a>
+                <a href="{% url 'entrepot_list' %}" class="btn-secondary-modern">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style pour la grille de détails */
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .detail-item {
+        margin-bottom: 15px;
+    }
+    
+    .full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .detail-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+    
+    .detail-value {
+        display: block;
+        padding: 12px 15px;
+        background: #f8f9ff;
+        border-radius: 8px;
+        color: #333;
+        min-height: 20px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .card-modern {
+            padding: 15px;
+        }
+        
+        .detail-value {
+            padding: 10px 12px;
+        }
+    }
+</style>
+{% endblock %}

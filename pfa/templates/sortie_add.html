@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div style="max-width: 1200px; margin: 0 auto; background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); border-radius: 25px; padding: 40px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <div class="card-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <h3 class="card-title">Ajouter une sortie</h3>
+            </div>
+            <div style="padding: 25px;">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Style moderne pour les champs du formulaire -->
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                        {% for field in form %}
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small style="color: #666; font-size: 0.8rem;">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <div style="color: #dc3545; font-size: 0.8rem; margin-top: 5px;">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                        <button type="submit" class="btn-primary-modern">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <a href="{% url 'sortie_list' %}" class="btn-secondary-modern">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style supplémentaire pour les champs de formulaire */
+    input, select, textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: rgba(255,255,255,0.9);
+    }
+    
+    input:focus, select:focus, textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        outline: none;
+    }
+    
+    .card-body {
+        padding: 0;
+    }
+</style>
+
+{% endblock %}

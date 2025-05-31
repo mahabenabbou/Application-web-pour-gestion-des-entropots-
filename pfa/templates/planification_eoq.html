@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planification EOQ - {{ product.name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #007bff;
+        }
+        .product-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #28a745;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .metric-label {
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        .cost-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .cost-total {
+            border-top: 2px solid #007bff;
+            padding-top: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #007bff;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+        }
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+            .btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if error %}
+            <div class="error">
+                <h3>Erreur</h3>
+                <p>{{ error }}</p>
+                <a href="javascript:history.back()" class="btn btn-secondary">Retour</a>
+            </div>
+        {% else %}
+            <div class="header">
+                <h1>Planification EOQ - Année {{ "now"|date:"Y"|add:1 }}</h1>
+                <h2>{{ product.name }}</h2>
+            </div>
+
+            <div class="product-info">
+                <h3>Informations Produit</h3>
+                <p><strong>Description:</strong> {{ product.description|default:"N/A" }}</p>
+                <p><strong>Prix unitaire:</strong> {{ product.price }}€</p>
+                <p><strong>Stock actuel:</strong> {{ product.stock }} unités</p>
+                <p><strong>Délai de réapprovisionnement:</strong> {{ product.delai_reappro_moyen }} jours</p>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">{{ demande_annuelle }}</div>
+                    <div class="metric-label">Demande annuelle prévue</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ eoq }}</div>
+                    <div class="metric-label">Quantité EOQ</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ nombre_commandes }}</div>
+                    <div class="metric-label">Nombre de commandes/an</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">{{ intervalle_jours }}</div>
+                    <div class="metric-label">Intervalle entre commandes (jours)</div>
+                </div>
+            </div>
+
+            <h3>Planning des Commandes {{ "now"|date:"Y"|add:1 }}</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Commande</th>
+                            <th>Mois</th>
+                            <th>Date Commande</th>
+                            <th>Date Réception</th>
+                            <th>Quantité</th>
+                            <th>Stock avant</th>
+                            <th>Stock après réception</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commande in planning %}
+                        <tr>
+                            <td>{{ commande.numero_commande }}</td>
+                            <td>{{ commande.mois }}</td>
+                            <td>{{ commande.date_commande }}</td>
+                            <td>{{ commande.date_reception }}</td>
+                            <td>{{ commande.quantite }}</td>
+                            <td>{{ commande.stock_avant_commande }}</td>
+                            <td>{{ commande.stock_after_reception }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Analyse des Coûts</h3>
+            <div class="cost-summary">
+                <div class="cost-item">
+                    <span>Coût des commandes annuel:</span>
+                    <span>{{ couts.cout_commande_annuel }}€</span>
+                </div>
+                <div class="cost-item">
+                    <span>Coût de possession annuel:</span>
+                    <span>{{ couts.cout_possession_annuel }}€</span>
+                </div>
+                <div class="cost-item cost-total">
+                    <span>Coût total de gestion des stocks:</span>
+                    <span>{{ couts.cout_total_gestion }}€</span>
+                </div>
+                <div class="cost-item">
+                    <span>Coût d'achat annuel:</span>
+                    <span>{{ couts.cout_achat_annuel }}€</span>
+                </div>
+                <div class="cost-item">
+                    <span>Stock moyen:</span>
+                    <span>{{ couts.stock_moyen }} unités</span>
+                </div>
+            </div>
+
+            <h4>Paramètres utilisés</h4>
+            <ul>
+                <li>Taux de possession: {{ parametres.taux_possession }}%</li>
+                <li>Coût fixe par commande: {{ parametres.cout_commande }}€</li>
+                <li>Coût unitaire: {{ parametres.cout_unitaire }}€</li>
+            </ul>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button onclick="window.print()" class="btn btn-primary">Télécharger</button>
+                <a href="javascript:history.back()" class="btn btn-secondary">Retour</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto; padding: 0 20px;">
+    <div class="card-modern" style="border-left: 4px solid #ff4757;">
+        <div class="card-header-modern" style="background: linear-gradient(135deg, #ff4757, #ff6b81); color: white;">
+            <div class="card-icon" style="background: rgba(255, 255, 255, 0.2);">
+                <i class="fas fa-truck-moving"></i>
+            </div>
+            <h3 class="card-title">Confirmer la suppression</h3>
+        </div>
+
+        <div style="padding: 2rem; text-align: center;">
+            <div style="margin-bottom: 2rem;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff4757; margin-bottom: 1rem;"></i>
+                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">
+                    Voulez-vous vraiment supprimer la sortie du produit <strong>{{ sortie.produit.name }}</strong> ?
+                </p>
+                <h4 style="color: #333; margin: 1rem 0; font-size: 1.3rem;">
+                    {{ user.username }}
+                </h4>
+                <p style="color: #666; font-size: 0.95rem;">
+                    <i class="fas fa-exclamation-circle"></i> Cette action est irréversible
+                </p>
+            </div>        
+
+            <form method="post" style="display: flex; justify-content: center; gap: 15px;">
+                {% csrf_token %}
+
+                <a href="{% url 'sortie_detail' sortie.id %}" class="btn-secondary-modern">
+                    <i class="fas fa-arrow-left"></i> Annuler
+                </a>
+                <button type="submit" class="btn-danger-modern">
+                    <i class="fas fa-trash-alt"></i>Supprimer définitivement
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<style>
+    /* Style spécifique pour la suppression */
+    .card-modern {
+        box-shadow: 0 5px 25px rgba(255, 71, 87, 0.15);
+    }
+    
+    .btn-danger-modern {
+        background: linear-gradient(135deg, #ff4757, #ff6b81);
+        box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+    }
+    
+    .btn-danger-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+    }
+    
+    /* Responsive */
+    @media (max-width: 576px) {
+        form {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn-danger-modern,
+        .btn-secondary-modern {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}

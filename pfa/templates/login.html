@@ -1,0 +1,359 @@
+<!doctype html>
+    <html lang="fr">
+        <style>
+            .login-container {
+                min-height: 100vh;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            
+            .login-card {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(15px);
+                border-radius: 25px;
+                padding: 40px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                width: 100%;
+                max-width: 450px;
+                transform: translateY(-20px);
+                animation: slideUp 0.8s ease forwards;
+            }
+            
+            @keyframes slideUp {
+                to {
+                    transform: translateY(0);
+                }
+            }
+            
+            .login-header {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+            
+            .login-title {
+                font-size: 2.5rem;
+                font-weight: 300;
+                color: #333;
+                margin-bottom: 10px;
+                position: relative;
+            }
+            
+            .login-title::after {
+                content: '';
+                display: block;
+                width: 80px;
+                height: 3px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                margin: 15px auto;
+                border-radius: 2px;
+            }
+            
+            .login-subtitle {
+                color: #666;
+                font-size: 1.1rem;
+                font-weight: 400;
+            }
+            
+            .form-group {
+                margin-bottom: 25px;
+                width: 370px;
+                height: 57px;
+                position: relative;
+            }
+            
+            .form-input {
+                width: 100%;
+                padding: 18px 20px 18px 55px;
+                border: 2px solid #e1e5e9;
+                border-radius: 15px;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                background: #f8f9ff;
+                color: #333;
+            }
+            
+            .form-input:focus {
+                outline: none;
+                border-color: #667eea;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                transform: translateY(-2px);
+            }
+            
+            .form-input::placeholder {
+                color: #999;
+                font-weight: 400;
+            }
+            
+            .input-icon {
+                position: absolute;
+                left: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 18px;
+                color: #667eea;
+                z-index: 1;
+            }
+            
+            .login-btn {
+                width: 100%;
+                padding: 18px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                border: none;
+                border-radius: 15px;
+                color: white;
+                font-size: 1.1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .login-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s;
+            }
+            
+            .login-btn:hover::before {
+                left: 100%;
+            }
+            
+            .login-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            }
+            
+            .login-btn:active {
+                transform: translateY(-1px);
+            }
+            
+            .welcome-icon {
+                font-size: 3rem;
+                margin-bottom: 20px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            
+            .floating-shapes {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                z-index: -1;
+            }
+            
+            .shape {
+                position: absolute;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            .shape:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                top: 20%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+            
+            .shape:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                top: 60%;
+                right: 10%;
+                animation-delay: 2s;
+            }
+            
+            .shape:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                bottom: 30%;
+                left: 20%;
+                animation-delay: 4s;
+            }
+            
+            @keyframes float {
+                0%, 100% {
+                    transform: translateY(0px) rotate(0deg);
+                }
+                50% {
+                    transform: translateY(-20px) rotate(180deg);
+                }
+            }
+            
+            .error-message {
+                background: #ffe6e6;
+                color: #d63031;
+                padding: 12px 15px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                border-left: 4px solid #d63031;
+                font-size: 0.9rem;
+            }
+            
+            @media (max-width: 768px) {
+                .login-card {
+                    margin: 10px;
+                    padding: 30px 25px;
+                }
+                
+                .login-title {
+                    font-size: 2rem;
+                }
+            }
+        </style>
+
+        {% if user.is_authenticated %}
+            <!-- Contenu pour utilisateur connecté -->
+            <div class="login-container">
+                <div class="login-card">
+                    <div class="login-header">
+                        <div class="welcome-icon">🎉</div>
+                        <h1 class="login-title">Bienvenue !</h1>
+                        <p class="login-subtitle">Vous êtes déjà connecté</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <a href="{% url 'home' %}" class="login-btn" style="text-decoration: none; display: inline-block;">
+                            Accéder au Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <div class="login-container">
+                <!-- Formes flottantes en arrière-plan -->
+                <div class="floating-shapes">
+                    <div class="shape"></div>
+                    <div class="shape"></div>
+                    <div class="shape"></div>
+                </div>
+                
+                <div class="login-card">
+                    <div class="login-header">
+                        <div class="welcome-icon">🔐</div>
+                        <h1 class="login-title">Bienvenue</h1>
+                        <p class="login-subtitle">Connectez-vous à votre espace</p>
+                    </div>
+                    
+                    <!-- Messages d'erreur -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="error-message">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <div class="input-icon">👤</div>
+                                <input 
+                                    type="text" 
+                                    class="form-input" 
+                                    name="username" 
+                                    placeholder="Nom d'utilisateur" 
+                                    required
+                                    autocomplete="username">
+                             </div>
+                        
+                        <div class="form-group">
+                            <div class="input-icon">🔒</div>
+                            <input 
+                                type="password" 
+                                class="form-input" 
+                                name="password" 
+                                placeholder="Mot de passe" 
+                                required
+                                autocomplete="current-password"
+                            >
+                        </div>
+                        
+                        <button type="submit" class="login-btn">
+                            Se connecter
+                        </button>
+                    </form>
+                    
+                </div>
+            </div>
+        {% endif %}
+
+        <script>
+            // Animation d'apparition progressive des éléments
+            document.addEventListener('DOMContentLoaded', function() {
+                const inputs = document.querySelectorAll('.form-input');
+                
+                inputs.forEach((input, index) => {
+                    input.style.opacity = '0';
+                    input.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        input.style.transition = 'all 0.5s ease';
+                        input.style.opacity = '1';
+                        input.style.transform = 'translateY(0)';
+                    }, index * 100 + 500);
+                });
+                
+                // Effet de focus automatique sur le premier champ
+                const firstInput = document.querySelector('input[name="username"]');
+                if (firstInput) {
+                    setTimeout(() => {
+                        firstInput.focus();
+                    }, 800);
+                }
+            });
+            
+            // Effet de particules au clic du bouton
+            document.querySelector('.login-btn')?.addEventListener('click', function(e) {
+                // Créer un effet de ripple
+                const btn = e.currentTarget;
+                const rect = btn.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                
+                btn.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        </script>
+
+        <style>
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        </style>
+    </html>

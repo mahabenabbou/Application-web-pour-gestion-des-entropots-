@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div class="card-modern">
+        <div class="card-header-modern">
+            <div class="card-icon">
+                <i class="fas fa-box-open"></i>
+            </div>
+            <h3 class="card-title">Produits</h3>
+        </div>
+
+        {% if user.profile.role.name in 'gestionnaire' %}
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'add_product' %}" class="btn-primary-modern">
+                <i class="fas fa-plus"></i> Ajouter un produit
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="table-container">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prix</th>
+                        <th>Stock de Sécurité</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                        <th>Valider Planification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if products %}
+                        {% for product in products %}
+                            <tr>
+                                <td><strong>{{ product.name }}</strong></td>
+                                <td>{{ product.price }} MAD</td>
+                                {% with stock_info=product.stock_display_info %}
+                                    <td>{{ stock_info.stock_securite }} unités</td>
+                                {% endwith %}
+                                <td>
+                                    <span class="{% if product.stock < stock_info.stock_securite %}badge-warning{% elif product.stock == 0 %}badge-danger{% else %}badge-success{% endif %}">
+                                        {{ product.stock }} unités
+                                    </span>
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    {% if user.profile.role.name in 'directeur gestionnaire' %}
+                                        <a href="{% url 'planification_eoq' product.id %}" class="btn-secondary-modern btn-sm">
+                                            📊 EOQ N+1
+                                        </a>
+                                        <a href="{% url 'product_detail' product.id %}" class="btn-secondary-modern btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if user.profile.role.name in 'gestionnaire' %}
+                                        <a href="{% url 'edit_product' product.pk %}" class="btn-primary-modern btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'confirm_delete_product' product.pk %}" class="btn-danger-modern btn-sm">
+                                            <i class="fas fa-trash"></i> 
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td style="white-space: nowrap;">
+                                    {% if user.profile.role.name == 'gestionnaire' %}
+                                        {% if product.validation_status == 'non_demande' %}
+                                            <a href="{% url 'demander_validation' product.id %}" class="btn btn-warning btn-sm">
+                                                Demander validation
+                                            </a>
+                                        {% else %}
+                                            <span class="badge bg-secondary">en cours</span>
+                                        {% endif %}
+                                    {% elif user.profile.role.name == 'directeur' and product.validation_status == 'en_attente' %}
+                                        <a href="{% url 'valider_produit' product.id 'valide' %}" class="btn btn-success btn-sm">✅</a>
+                                        <a href="{% url 'valider_produit' product.id 'refuse' %}" class="btn btn-danger btn-sm">❌ </a>
+                                        <a href="{% url 'valider_produit' product.id 'a_discuter' %}" class="btn btn-info btn-sm">❓ </a>
+                                    {% endif %}
+
+                                    {% if product.validation_status != 'non_demande' %}
+                                        <span class="badge bg-light text-dark">{{ product.get_validation_status_display }}</span>
+                                    {% endif %}
+                                    {% if user.profile.role.name == 'gestionnaire' %}
+                                        <a href="{% url 'reinitialiser_validation' product.id %}" class="btn btn-outline-secondary btn-sm">
+                                            🔄
+                                        </a>
+                                    {% endif %}        
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">Aucun produit trouvé</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styles complémentaires */
+    .badge-success {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}

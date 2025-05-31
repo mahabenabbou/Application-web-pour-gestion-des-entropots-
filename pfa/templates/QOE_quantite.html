@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div class="card-modern mb-20">
+        <div class="card-header-modern">
+            <div class="card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <h3 class="card-title">Méthode de Wilson à quantité constante</h3>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <!-- Données historiques -->
+            <div class="card-modern mb-20">
+                <div class="card-header-modern" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center;">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 class="card-title">Données historiques par trimestre</h3>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table-modern">
+                        <thead>
+                            <tr>
+                                <th>Année</th>
+                                <th>T1</th>
+                                <th>T2</th>
+                                <th>T3</th>
+                                <th>T4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Année 1</th>
+                                <td><input type="number" step="any" class="form-input-modern" name="an1_T1" value="{{ donnees_historiques.an1.0|default:0 }}"></td>
+                                <td><input type="number" step="any" class="form-input-modern" name="an1_T2" value="{{ donnees_historiques.an1.1|default:0 }}"></td>
+                                <td><input type="number" step="any" class="form-input-modern" name="an1_T3" value="{{ donnees_historiques.an1.2|default:0 }}"></td>
+                                <td><input type="number" step="any" class="form-input-modern" name="an1_T4" value="{{ donnees_historiques.an1.3|default:0 }}"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Année 2</th>
+                                <td><input type="number" step="any" class="form-input-modern" name="an2_T1" value="{{ donnees_historiques.an2.0|default:0 }}"></td>
+                                <td><input type="number" step="any" class="form-input-modern" name="an2_T2" value="{{ donnees_historiques.an2.1|default:0 }}"></td>
+                                <td><input type="number" step="any" class="form-input-modern" name="an2_T3" value="{{ donnees_historiques.an2.2|default:0 }}"></td>
+                                <td><input type="number" step="any" class="form-input-modern" name="an2_T4" value="{{ donnees_historiques.an2.3|default:0 }}"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Année 3</th>
+                                <td><input type="number" step="any" class="form-input-modern" name="an3_T1" value="{{ donnees_historiques.an3.0|default:0 }}"></td>
+                                <td><input type="number" step="any" class="form-input-modern" name="an3_T2" value="{{ donnees_historiques.an3.1|default:0 }}"></td>
+                                <td><input type="number" step="any" class="form-input-modern" name="an3_T3" value="{{ donnees_historiques.an3.2|default:0 }}"></td>
+                                <td><input type="number" step="any" class="form-input-modern" name="an3_T4" value="{{ donnees_historiques.an3.3|default:0 }}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Paramètres -->
+            <div class="card-modern mb-20">
+                <div class="card-header-modern" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center;">
+                        <div class="card-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3 class="card-title">Paramètres</h3>
+                    </div>
+                </div>
+                
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                        <div class="form-group-modern">
+                            <label for="{{ form.delai_reappro.id_for_label }}">
+                                <i class="fas fa-clock"></i> {{ form.delai_reappro.label }}
+                            </label>
+                            {{ form.delai_reappro }}
+                        </div>
+                        
+                        <div class="form-group-modern">
+                            <label for="{{ form.stock_initial.id_for_label }}">
+                                <i class="fas fa-boxes"></i> {{ form.stock_initial.label }}
+                            </label>
+                            {{ form.stock_initial }}
+                        </div>
+                        
+                        <div class="form-group-modern">
+                            <label for="{{ form.stock_securite.id_for_label }}">
+                                <i class="fas fa-shield-alt"></i> {{ form.stock_securite.label }}
+                            </label>
+                            {{ form.stock_securite }}
+                        </div>
+                        
+                        <div class="form-group-modern">
+                            <label for="{{ form.taux_possession.id_for_label }}">
+                                <i class="fas fa-percentage"></i> {{ form.taux_possession.label }}
+                            </label>
+                            {{ form.taux_possession }}
+                        </div>
+                        
+                        <div class="form-group-modern">
+                            <label for="{{ form.prix_unitaire.id_for_label }}">
+                                <i class="fas fa-tag"></i> {{ form.prix_unitaire.label }}
+                            </label>
+                            {{ form.prix_unitaire }}
+                        </div>
+                        
+                        <div class="form-group-modern">
+                            <label for="{{ form.cout_passation.id_for_label }}">
+                                <i class="fas fa-file-invoice-dollar"></i> {{ form.cout_passation.label }}
+                            </label>
+                            {{ form.cout_passation }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <button type="submit" class="btn-primary-modern btn-lg">
+                    <i class="fas fa-calculator"></i> Calculer
+                </button>
+            </div>
+        </form>
+
+        {% if prev_n1 %}
+        <!-- Résultats -->
+        <div class="card-modern mb-20">
+            <div class="card-header-modern">
+                <div class="card-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h3 class="card-title">Résultat</h3>
+            </div>
+            
+            <div style="padding: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div class="stat-item">
+                        <span class="stat-label">Consommation totale prévue</span>
+                        <span class="stat-number">{{ C }}</span>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <span class="stat-label">Stock de sécurité (SS)</span>
+                        <span class="stat-number">{{ SS }}</span>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <span class="stat-label">Quantité optimale (Q*)</span>
+                        <span class="stat-number">{{ Q }}</span>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <span class="stat-label">Nombre de commandes</span>
+                        <span class="stat-number">{{ nombre_de_commandes }}</span>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <span class="stat-label">Cadence</span>
+                        <span class="stat-number">{{ cadence_mois }} mois</span>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="table-modern">
+                        <caption style="caption-side: top; text-align: center; font-weight: bold; margin-bottom: 15px;">
+                            Prévisions pour N+1
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>T1</th>
+                                <th>T2</th>
+                                <th>T3</th>
+                                <th>T4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for item in prev_n1 %}
+                                <td>{{ item }}</td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Programme d'approvisionnement -->
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <div class="card-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3 class="card-title">Programme d'approvisionnement</h3>
+            </div>
+            
+            <div class="table-container">
+                <table class="table-modern">
+                    <thead>
+                        <tr>
+                            <th>Mois</th>
+                            <th>Commande passée (Q)</th>
+                            <th>Stock après livraison</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mois, data in stock_programme.items %}
+                        <tr>
+                            <td>{{ data.0 }}</td>
+                            <td>
+                                {% if data.0 is not None %}
+                                    <span class="badge-primary">{{ data.1 }} unités</span>
+                                {% else %}
+                                    <span class="badge-secondary">Pas de commande</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ data.2 }} unités</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    /* Styles pour les champs de formulaire */
+    .form-input-modern {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #f9f9f9;
+    }
+    
+    .form-input-modern:focus {
+        border-color: #4facfe;
+        box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+        outline: none;
+        background-color: #fff;
+    }
+    
+    .form-group-modern {
+        margin-bottom: 15px;
+    }
+    
+    .form-group-modern label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #555;
+    }
+    
+    /* Badges */
+    .badge-primary {
+        background: #d1e7ff;
+        color: #004085;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+    
+    .badge-secondary {
+        background: #e2e3e5;
+        color: #383d41;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .table-modern th:nth-child(3),
+        .table-modern td:nth-child(3),
+        .table-modern th:nth-child(4),
+        .table-modern td:nth-child(4) {
+            display: none;
+        }
+        
+        div[style*="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))"] {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

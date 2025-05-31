@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .dashboard-container {
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+    
+    .dashboard-header {
+        color: white;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .dashboard-header h2 {
+        font-size: 2.5rem;
+        font-weight: 300;
+        margin-bottom: 10px;
+    }
+    
+    .dashboard-header h6 {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        font-weight: 400;
+    }
+    
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 24px;
+        color: white;
+    }
+    
+    .card-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .stat-item {
+        background: #f8f9ff;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        border-left: 4px solid #667eea;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #667eea;
+        display: block;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .data-table th {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    .data-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #f0f0f0;
+        color: #555;
+    }
+    
+    .data-table tr:hover {
+        background: #f8f9ff;
+    }
+    
+    .action-links {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .action-links li {
+        margin-bottom: 10px;
+    }
+    
+    .action-links a {
+        display: inline-block;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        transition: transform 0.2s ease;
+        font-weight: 500;
+    }
+    
+    .action-links a:hover {
+        transform: scale(1.05);
+    }
+    
+    .login-history {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .login-item {
+        background: #f8f9ff;
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        border-left: 3px solid #667eea;
+    }
+    
+    .admin-icon { background: linear-gradient(135deg, #ff6b6b, #ee5a52); }
+    .products-icon { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
+    .warehouse-icon { background: linear-gradient(135deg, #ffa726, #fb8c00); }
+    .supply-icon { background: linear-gradient(135deg, #ab47bc, #8e24aa); }
+    .users-icon { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
+</style>
+
+<div class="dashboard-container">
+    <!-- Pour l'admin -->
+    {% if user.profile.role.name == "admin" %}
+        <div class="dashboard-header">
+            <h2>🛡️ Dashboard Admin</h2>
+            <h6>{{ user.username }} - Entrepôt : {{ user.profile.entrepot.nom }}</h6>
+        </div>
+        
+        <div class="cards-grid">
+            <!-- Gestion utilisateurs -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon admin-icon">👥</div>
+                    <h3 class="card-title">Gestion Utilisateurs</h3>
+                </div>
+                <ul class="action-links">
+                    <li><a href="{% url 'users' %}">🔧 Gérer les utilisateurs</a></li>
+                </ul>
+            </div>
+            
+            <!-- Statistiques utilisateurs -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon users-icon">📊</div>
+                    <h3 class="card-title">Activité Utilisateurs</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_users }}</span>
+                        <span class="stat-label">Total utilisateurs</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">{{ logins_last_week }}</span>
+                        <span class="stat-label">Connexions/semaine</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Historique des connexions -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <div class="card-icon admin-icon">🕒</div>
+                    <h3 class="card-title">Derniers Logins</h3>
+                </div>
+                <div class="login-history">
+                    {% for log in login_entries %}
+                        <div class="login-item">
+                            <strong>{{ log.user.username }}</strong> - {{ log.login_time }} - IP : {{ log.ip_address }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Pour le directeur d'entrepôt -->
+    {% if user.profile.role.name == "directeur" %}
+        <div class="dashboard-header">
+            <h2>🏢 Dashboard Directeur</h2>
+            <h6>{{ user.username }}</h6>
+        </div>
+        
+        <div class="cards-grid">
+            <!-- KPI Produits -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <div class="card-icon products-icon">📦</div>
+                    <h3 class="card-title">Performance Produits</h3>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Taux rotation stocks</th>
+                            <th>Couverture de stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for kpi in kpi_products %}
+                        <tr>
+                            <td><strong>{{ kpi.product.name }}</strong></td>
+                            <td>{{ kpi.taux_rotation|floatformat:2 }}</td>
+                            <td>{{ kpi.couverture_stock|floatformat:2 }} jours</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Réapprovisionnement -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon supply-icon">🚚</div>
+                    <h3 class="card-title">Réapprovisionnement</h3>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ delai_moyen_reappro|floatformat:1 }}</span>
+                    <span class="stat-label">Délai moyen (jours)</span>
+                </div>
+            </div>
+            
+            <!-- KPI Entrepôts -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <div class="card-icon warehouse-icon">🏭</div>
+                    <h3 class="card-title">Coûts Entrepôts</h3>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Entrepôt</th>
+                            <th>Coût d'entreposage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for kpi in kpi_entrepots %}
+                        <tr>
+                            <td><strong>{{ kpi.entrepot.nom }}</strong></td>
+                            <td>{{ kpi.cout_entreposage|floatformat:2 }} €/unit</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Pour les gestionnaires -->
+    {% if user.profile.role.name == "gestionnaire" %}
+        <div class="dashboard-header">
+            <h2>📋 Dashboard Gestionnaire</h2>
+            <h6>{{ user.username }}</h6>
+        </div>
+        
+        <div class="cards-grid">
+            <!-- KPI Produits -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <div class="card-icon products-icon">📦</div>
+                    <h3 class="card-title">Gestion Produits</h3>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Taux rotation stocks</th>
+                            <th>Couverture de stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for kpi in kpi_products %}
+                        <tr>
+                            <td><strong>{{ kpi.product.name }}</strong></td>
+                            <td>{{ kpi.taux_rotation|floatformat:2 }}</td>
+                            <td>{{ kpi.couverture_stock|floatformat:2 }} jours</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Réapprovisionnement -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon supply-icon">🚚</div>
+                    <h3 class="card-title">Réapprovisionnement</h3>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ delai_moyen_reappro|floatformat:1 }}</span>
+                    <span class="stat-label">Délai moyen (jours)</span>
+                </div>
+            </div>
+    {% endif %}
+</div>
+
+{% endblock %}

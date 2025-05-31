@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div class="card-modern">
+        <div class="card-header-modern">
+            <div class="card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <i class="fas fa-box-open"></i>
+            </div>
+            <h3 class="card-title">Détails du produit</h3>
+        </div>
+
+        <div style="padding: 25px;">
+            <div class="product-detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Nom</span>
+                    <span class="detail-value">{{ product.name }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">Description</span>
+                    <span class="detail-value">{{ product.description|default:"-" }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">Prix</span>
+                    <span class="detail-value">{{ product.price }} MAD</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label">Stock</span>
+                    <span class="detail-value badge-{% if product.stock < 10 %}warning{% elif product.stock == 0 %}danger{% else %}success{% endif %}">
+                        {{ product.stock }} unités
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Délai de réapprovisionnement moyen</span>
+                    <span class="detail-value">
+                        {{ product.delai_reappro_moyen }} jours
+                    </span>
+                </div>
+
+                <div class="detail-item">
+                    <span class="detail-label">Facteur z</span>
+                    <span class="detail-value">
+                        {{ product.facteur_z }}
+                    </span>
+                </div>
+                
+                <div class="detail-item full-width">
+                    <span class="detail-label">Entrepôts</span>
+                    <div class="entrepot-list">
+                        {% if product.entrepots %}
+                                <span class="entrepot-badge"><i class="fas fa-warehouse"></i> </span>
+                                <span class="detail-value">
+                                    {{ product.entrepots.nom }}
+                                </span>
+                        {% else %}
+                            <span class="no-entrepot">
+                                <i class="fas fa-exclamation-circle"></i> Aucun entrepôt associé
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 30px;">
+                <a href="{% url 'products' %}" class="btn-secondary-modern">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    /* Style pour la grille de détails */
+    .product-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .detail-item {
+        margin-bottom: 15px;
+    }
+    
+    .full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .detail-label {
+        display: block;
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .detail-value {
+        display: block;
+        padding: 10px 15px;
+        background: #f8f9ff;
+        border-radius: 8px;
+        color: #333;
+    }
+    
+    /* Style pour les badges d'entrepôt */
+    .entrepot-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .entrepot-badge {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .no-entrepot {
+        color: #666;
+        font-style: italic;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Badges colorés pour le stock */
+    .badge-success {
+        background: #d4edda;
+        color: #155724;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-warning {
+        background: #fff3cd;
+        color: #856404;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-danger {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+        .product-detail-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .card-modern {
+            padding: 15px;
+        }
+    }
+</style>
+{% endblock %}

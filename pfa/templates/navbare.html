@@ -1,0 +1,278 @@
+<nav class="navbar-modern">
+  <div class="nav-container">
+    <li class="nav-brand" href="#">
+      <i class="fas fa-boxes" style="margin-right: 10px;"></i>
+      StockFlow
+    </li>
+    
+    <button class="nav-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+      <i class="fas fa-bars"></i>
+    </button>
+    
+    
+
+    {% if user.is_authenticated %}
+    <div class="nav-collapse" id="navbarSupportedContent">
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'home' %}">
+            <i class="fas fa-home"></i> Accueil
+          </a>
+        </li>
+        
+        {% if user.profile.role.name in 'directeur gestionnaire' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'products' %}">
+            <i class="fas fa-box-open"></i> Produit
+          </a>
+        </li>
+        {% endif %}
+        
+        {% if user.profile.role.name in 'directeur' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'entrepot_list' %}">
+            <i class="fas fa-warehouse"></i> Entrepôt
+          </a>
+        </li>
+        {% endif %}
+
+        {% if user.profile.role.name in 'directeur gestionnaire' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'sortie_list' %}">
+            <i class="fas fa-truck-moving"></i> Sortie
+          </a>
+        </li>
+        {% endif %}
+
+        {% if user.profile.role.name in 'directeur gestionnaire' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'reapprovisionnement_list' %}">
+            <i class="fas fa-shipping-fast"></i> Réapprovisionnement
+          </a>
+        </li>
+        {% endif %}
+
+        {% if user.profile.role.name in 'admin' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'users' %}">
+            <i class="fas fa-list"></i> Liste des utilisateurs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'register' %}">
+            <i class="fas fa-user-plus"></i>Ajouter un utilisateur
+          </a>
+        </li>
+        
+        {% endif %}
+
+        {% if user.profile.role.name in 'gestionnaire' %}
+
+            <li><a href="{% url 'QOE_quantite' %}" class="dropdown-item">
+              <i class="fas fa-chart-line"></i>  Prévision à Quantité Constante
+            </a></li>
+            <li><a href="{% url 'QOE_intervalle' %}" class="dropdown-item">
+              <i class="fas fa-chart-bar"></i>  Prévision à Intervalle Constant
+            </a></li>
+          
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link logout" href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt"></i> Déconnexion
+          </a>
+        </li>
+        {% endif %}
+        
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}">
+            <i class="fas fa-sign-in-alt"></i> Connexion
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<style>
+  /* Styles pour la navbar moderne */
+.navbar-modern {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  border-radius: 15px;
+  padding: 10px 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 30px;
+}
+
+.nav-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1490px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #667eea;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  padding: 5px 0;
+}
+
+.nav-toggler {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #667eea;
+  cursor: pointer;
+  display: none;
+  padding: 5px;
+  margin-left: 10px;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  position: relative;
+  margin: 0;
+}
+
+.nav-link {
+  color: #555;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover, 
+.nav-link.active {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+/* Styles pour les menus déroulants */
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: 5px;
+  vertical-align: middle;
+  content: "▾";
+  font-size: 0.8em;
+}
+
+.dropdown-menu-modern {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  padding: 5px 0;
+  min-width: 200px;
+  z-index: 1000;
+  display: none;
+  list-style: none;
+  margin: 0;
+}
+
+.dropdown:hover .dropdown-menu-modern {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 15px;
+  color: #555;
+  text-decoration: none;
+  display: block;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+  background: #f8f9ff;
+  color: #667eea;
+}
+
+/* Style spécifique pour le bouton de déconnexion */
+.logout {
+  color: #dc3545 !important;
+}
+
+.logout:hover {
+  background: rgba(220, 53, 69, 0.1) !important;
+}
+
+/* Styles Responsive */
+@media (max-width: 992px) {
+  .navbar-modern {
+    padding: 10px 15px;
+  }
+  
+  .nav-toggler {
+    display: block;
+    order: 2;
+  }
+  
+  .nav-brand {
+    order: 1;
+  }
+  
+  .nav-collapse {
+    order: 3;
+    width: 100%;
+    display: none;
+  }
+  
+  .nav-menu {
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px 0;
+  }
+  
+  .nav-link {
+    padding: 10px 15px;
+  }
+  
+  .dropdown-menu-modern {
+    position: static;
+    box-shadow: none;
+    display: none;
+    padding-left: 15px;
+    width: 100%;
+  }
+  
+  .show {
+    display: block;
+  }
+}
+</style>
+
+<script>
+  // Script pour le toggle mobile (si Bootstrap JS n'est pas utilisé)
+  document.querySelector('.nav-toggler').addEventListener('click', function() {
+    const menu = document.getElementById('navbarSupportedContent');
+    menu.classList.toggle('show');
+  });
+</script>

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div class="card-modern">
+        <div class="card-header-modern">
+            <div class="card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <i class="fas fa-truck-moving"></i>
+            </div>
+            <h3 class="card-title">Modifier la sortie</h3>
+        </div>
+
+        <div style="padding: 25px;">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert-modern" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #dc3545;">
+                    <strong style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Veuillez corriger les erreurs suivantes :
+                    </strong>
+                    <ul style="margin: 10px 0 0 20px; padding-left: 0;">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li style="margin-bottom: 5px;">{{ field.label }} : {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li style="margin-bottom: 5px;">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                    {% for field in form %}
+                    <div class="form-group-modern">
+                        <label for="{{ field.id_for_label }}" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 500; color: #555;">
+                            {% if field.name == 'produit' %}
+                                <i class="fas fa-box-open"></i>
+                            {% elif field.name == 'entrepot' %}
+                                <i class="fas fa-warehouse"></i>
+                            {% elif field.name == 'quantite' %}
+                                <i class="fas fa-boxes"></i>
+                            {% elif field.name == 'date_sortie' %}
+                                <i class="fas fa-calendar-day"></i>
+                            {% elif field.name == 'remarque' %}
+                                <i class="fas fa-comment-alt"></i>
+                            {% endif %}
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <small style="display: block; margin-top: 5px; color: #666; font-size: 0.85rem;">
+                            {{ field.help_text }}
+                        </small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;">
+                    <button type="submit" class="btn-primary-modern">
+                        <i class="fas fa-save"></i> Enregistrer les modifications
+                    </button>
+                    <a href="{% url 'sortie_list' %}" class="btn-secondary-modern">
+                        <i class="fas fa-times"></i> Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styles pour les champs de formulaire */
+    .form-group-modern input,
+    .form-group-modern select,
+    .form-group-modern textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #f9f9f9;
+    }
+    
+    .form-group-modern textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .form-group-modern input:focus,
+    .form-group-modern select:focus,
+    .form-group-modern textarea:focus {
+        border-color: #4facfe;
+        box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+        outline: none;
+        background-color: #fff;
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+        .card-modern {
+            padding: 15px;
+        }
+        
+        .form-group-modern input,
+        .form-group-modern select,
+        .form-group-modern textarea {
+            padding: 10px 12px;
+        }
+        
+        div[style*="gap: 15px"] {
+            flex-direction: column;
+        }
+        
+        .btn-primary-modern,
+        .btn-secondary-modern {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

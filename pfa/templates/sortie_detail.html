@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div class="card-modern">
+        <div class="card-header-modern" style="background:#667eea;">
+            <div class="card-icon" style="background: rgba(255, 255, 255, 0.2);">
+                <i class="fas fa-truck-moving"></i>
+            </div>
+            <h3 class="card-title" style="color: white;">Détails de Sortie</h3>
+        </div>
+
+        <div style="padding: 25px;">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-box-open"></i> Produit</span>
+                    <span class="detail-value">{{ sortie.produit }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-warehouse"></i> Entrepôt</span>
+                    <span class="detail-value">{{ sortie.entrepot }}</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-boxes"></i> Quantité</span>
+                    <span class="detail-value">{{ sortie.quantite }} unités</span>
+                </div>
+                
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-calendar-day"></i> Date de sortie</span>
+                    <span class="detail-value">{{ sortie.date_sortie }}</span>
+                </div>
+                
+                <div class="detail-item full-width">
+                    <span class="detail-label"><i class="fas fa-comment-alt"></i> Remarque</span>
+                    <span class="detail-value">{{ sortie.remarque|default:"Aucune remarque" }}</span>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 30px;">
+                <a href="{% url 'sortie_list' %}" class="btn-secondary-modern">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style pour la grille de détails */
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .detail-item {
+        margin-bottom: 15px;
+    }
+    
+    .full-width {
+        grid-column: 1 / -1;
+    }
+    
+    .detail-label {
+        display: block;
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .detail-value {
+        display: block;
+        padding: 10px 15px;
+        background: #f8f9ff;
+        border-radius: 8px;
+        color: #333;
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .card-modern {
+            padding: 15px;
+        }
+        
+        .detail-value {
+            padding: 10px 12px;
+        }
+    }
+</style>
+{% endblock %}

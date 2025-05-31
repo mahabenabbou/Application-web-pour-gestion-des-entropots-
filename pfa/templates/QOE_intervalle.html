@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <!-- Titre principal -->
+    <div class="card-modern mb-20">
+        <div class="card-header-modern">
+            <div class="card-icon">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <h3 class="card-title">Méthode de Wilson à intervalle constant</h3>
+        </div>
+    </div>
+
+    <!-- Section Données Historiques -->
+    <div class="card-modern mb-20">
+        <div class="card-header-modern" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center;">
+                <div class="card-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="card-title">Données historiques</h3>
+            </div>
+            <a href="{% url 'ajouter_demande' %}" class="btn-primary-modern">
+                <i class="fas fa-plus"></i> Ajouter des données
+            </a>
+        </div>
+        <div class="table-container">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th>Année</th>
+                        <th>T1</th>
+                        <th>T2</th>
+                        <th>T3</th>
+                        <th>T4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for annee in annees %}
+                    <tr>
+                        <td><strong>{{ annee }}</strong></td>
+                        {% for trimestre in '1234' %}
+                        <td>
+                            {% for d in demandes %}
+                                {% if d.annee == annee and d.trimestre == trimestre|add:"0" %}
+                                    {{ d.valeur }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Section Paramètres -->
+    <div class="card-modern mb-20">
+        <div class="card-header-modern" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center;">
+                <div class="card-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h3 class="card-title">Paramètres</h3>
+            </div>
+            <a href="{% url 'modifier_parametres' %}" class="btn-secondary-modern">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+        </div>
+        <div style="padding: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                <div class="stat-item">
+                    <span class="stat-label">Stock initial</span>
+                    <span class="stat-number">{{ parametres.stock_initial }}</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Délai de livraison</span>
+                    <span class="stat-number">{{ parametres.delai_livraison }} mois</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Coût de passation</span>
+                    <span class="stat-number">{{ parametres.cout_passation_commande }}</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Prix unitaire</span>
+                    <span class="stat-number">{{ parametres.prix_unitaire }}</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Taux de possession</span>
+                    <span class="stat-number">{{ parametres.taux_possession_pourcentage }}%</span>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">Stock de sécurité</span>
+                    <span class="stat-number">{{ parametres.stock_securite }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section Résultats -->
+    {% if resultats %}
+    <div class="card-modern">
+        <div class="card-header-modern">
+            <div class="card-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3 class="card-title">Plan de réapprovisionnement annuel</h3>
+        </div>
+        <div class="table-container">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th>Mois</th>
+                        <th>Consommation</th>
+                        <th>Livraison</th>
+                        <th>Stock après consommation</th>
+                        <th>Stock rectifié</th>
+                        <th>Mois de commande</th>
+                        <th>Date de livraison</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in resultats %}
+                    <tr>
+                        <td><strong>{{ r.Mois }}</strong></td>
+                        <td>{{ r.Consommation }}</td>
+                        <td>{{ r.Livraison }}</td>
+                        <td>
+                            <span class="{% if r.stock_apres_consommation < parametres.stock_securite %}badge-warning{% else %}badge-success{% endif %}">
+                                {{ r.stock_apres_consommation }}
+                            </span>
+                        </td>
+                        <td>{{ r.stock_rectifie }}</td>
+                        <td>
+                            {% if r.mois_commande %}
+                                <span class="badge-info">{{ r.mois_commande.0 }} {{ r.mois_commande.1 }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.mois_livraison %}
+                                <span class="badge-primary">{{ r.mois_livraison.0 }} {{ r.mois_livraison.1 }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="card-modern">
+        <div class="card-header-modern">
+            <div class="card-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <h3 class="card-title">Information</h3>
+        </div>
+        <div style="padding: 20px; text-align: center; color: #666;">
+            <i class="fas fa-database" style="font-size: 2rem; margin-bottom: 15px;"></i>
+            <p>Vous devez avoir des données pour au moins 3 années pour générer des prévisions.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    /* Badges colorés */
+    .badge-success {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-primary {
+        background-color: #cce5ff;
+        color: #004085;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    /* Amélioration responsive */
+    @media (max-width: 768px) {
+        .table-modern th:nth-child(4),
+        .table-modern td:nth-child(4),
+        .table-modern th:nth-child(5),
+        .table-modern td:nth-child(5) {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}

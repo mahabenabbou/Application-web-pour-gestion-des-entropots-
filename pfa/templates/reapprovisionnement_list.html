@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div class="card-modern">
+        <div class="card-header-modern">
+            <div class="card-icon">
+                <i class="fas fa-shipping-fast"></i>
+            </div>
+            <h3 class="card-title">Liste des réapprovisionnements</h3>
+        </div>
+
+        {% if user.profile.role.name in 'gestionnaire' %}
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'add_reapprovisionnement' %}" class="btn-primary-modern">
+                <i class="fas fa-plus"></i> Ajouter un réapprovisionnement
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="table-container">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Entrepôt</th>
+                        <th>Date commande</th>
+                        <th>Date réception</th>
+                        <th>Quantité</th>
+                        <th>Délai (jours)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reapprovisionnements %}
+                    <tr>
+                        <td><strong>{{ r.product.name }}</strong></td>
+                        <td>{{ r.entrepot.nom }}</td>
+                        <td>{{ r.date_commande|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if r.date_reception %}
+                                {{ r.date_reception|date:"d/m/Y" }}
+                            {% else %}
+                                <span class="badge-warning">En attente</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ r.quantite }}</td>
+                        <td>
+                            {% if r.delai_reapprovisionnement %}
+                                <span class="{% if r.delai_reapprovisionnement > 7 %}badge-danger{% else %}badge-success{% endif %}">
+                                    {{ r.delai_reapprovisionnement }}
+                                </span>
+                            {% else %}
+                                <span class="badge-info">N/A</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td style="white-space: nowrap;">
+                            <a href="{% url 'reapprovisionnement_detail' pk=r.id %}" class="btn-secondary-modern btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% if user.profile.role.name in 'gestionnaire' %}
+                            <a href="{% url 'edit_reapprovisionnement' pk=r.id %}" class="btn-primary-modern btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'delete_reapprovisionnement' pk=r.id %}" class="btn-danger-modern btn-sm">
+                                <i class="fas fa-trash"></i>
+                            {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center" style="padding: 30px;">
+                            <i class="fas fa-boxes" style="font-size: 2rem; color: #667eea; margin-bottom: 15px;"></i>
+                            <p style="color: #666; margin: 0;">Aucun réapprovisionnement enregistré</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Badges colorés */
+    .badge-success {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+    }
+    
+    /* Amélioration responsive */
+    @media (max-width: 992px) {
+        .table-modern th:nth-child(2),
+        .table-modern td:nth-child(2),
+        .table-modern th:nth-child(6),
+        .table-modern td:nth-child(6) {
+            display: none;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .table-modern th:nth-child(3),
+        .table-modern td:nth-child(3),
+        .table-modern th:nth-child(4),
+        .table-modern td:nth-child(4) {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}

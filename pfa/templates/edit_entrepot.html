@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div class="card-modern">
+        <div class="card-header-modern">
+            <div class="card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <i class="fas fa-warehouse"></i>
+            </div>
+            <h3 class="card-title">Modifier l'entrepôt</h3>
+        </div>
+
+        <div style="padding: 25px;">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                    {% for field in form %}
+                    <div class="form-group-modern">
+                        <label for="{{ field.id_for_label }}" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-weight: 500; color: #555;">
+                            {% if field.name == 'nom' %}
+                                <i class="fas fa-signature"></i>
+                            {% elif field.name == 'ville' %}
+                                <i class="fas fa-city"></i>
+                            {% elif field.name == 'adresse' %}
+                                <i class="fas fa-map-marker-alt"></i>
+                            {% elif field.name == 'description' %}
+                                <i class="fas fa-align-left"></i>
+                            {% elif field.name == 'surface' %}
+                                <i class="fas fa-ruler-combined"></i>
+                            {% elif field.name == 'cout_variable_unitaire' %}
+                                <i class="fas fa-ruler-combined"></i>
+                            {% elif field.name == 'cout_fixe_annuel' %}
+                                <i class="fas fa-ruler-combined"></i>
+                            {% endif %}
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <small style="display: block; margin-top: 5px; color: #666; font-size: 0.85rem;">
+                            {{ field.help_text }}
+                        </small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div style="color: #dc3545; font-size: 0.85rem; margin-top: 5px;">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap;">
+                    <button type="submit" class="btn-primary-modern">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                    <a href="{% url 'entrepot_list' %}" class="btn-secondary-modern">
+                        <i class="fas fa-times"></i> Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styles pour les champs de formulaire */
+    .form-group-modern input,
+    .form-group-modern select,
+    .form-group-modern textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #f9f9f9;
+    }
+    
+    .form-group-modern textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .form-group-modern input:focus,
+    .form-group-modern select:focus,
+    .form-group-modern textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        outline: none;
+        background-color: #fff;
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+        .card-modern {
+            padding: 15px;
+        }
+        
+        .form-group-modern input,
+        .form-group-modern select,
+        .form-group-modern textarea {
+            padding: 10px 12px;
+        }
+        
+        div[style*="gap: 15px"] {
+            flex-direction: column;
+        }
+        
+        .btn-primary-modern,
+        .btn-secondary-modern {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

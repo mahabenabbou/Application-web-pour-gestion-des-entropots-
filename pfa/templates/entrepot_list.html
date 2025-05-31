@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div class="card-modern mb-20">
+        <div class="card-header-modern">
+            <div class="card-icon">
+                <i class="fas fa-warehouse"></i>
+            </div>
+            <h3 class="card-title">Liste des entrepôts</h3>
+        </div>
+
+        {% if user.profile.role.name in 'directeur' %}
+        <div style="margin: 0 25px 20px 25px;">
+            <a href="{% url 'ajouter_entrepot' %}" class="btn-primary-modern">
+                <i class="fas fa-plus"></i> Ajouter un entrepôt
+            </a>
+        </div>
+        {% endif %}
+
+        <div class="table-container">
+            <table class="table-modern">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Adresse</th>
+                        <th>Description</th>
+                        <th>Employés</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entrepot in entrepots %}
+                    <tr>
+                        <td><strong>{{ entrepot.nom }}</strong></td>
+                        <td>{{ entrepot.ville }}</td>
+                        <td>{{ entrepot.description|truncatechars:50|default:"-" }}</td>
+                        <td>
+                            <span class="badge-modern" style="background: #e3f2fd; color: #1976d2;">
+                                {{ entrepot.users.count }} <i class="fas fa-users"></i>
+                            </span>
+                        </td>
+                        <td style="white-space: nowrap;">
+                            <a href="{% url 'entrepot_detail' entrepot.pk %}" class="btn-secondary-modern btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% if user.profile.role.name in 'directeur' %}
+                                <a href="{% url 'edit_entrepot' entrepot.pk %}" class="btn-primary-modern btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'delete_entrepot' entrepot.pk %}" class="btn-danger-modern btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center" style="padding: 30px; color: #666;">
+                            <i class="fas fa-warehouse" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                            <p>Aucun entrepôt trouvé</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style pour les badges */
+    .badge-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    /* Adaptation responsive */
+    @media (max-width: 992px) {
+        .table-modern th:nth-child(3),
+        .table-modern td:nth-child(3) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .table-modern th:nth-child(2),
+        .table-modern td:nth-child(2),
+        .table-modern th:nth-child(4),
+        .table-modern td:nth-child(4) {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
